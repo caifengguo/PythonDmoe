@@ -1,0 +1,107 @@
+//LINUX下开发环境的搭建
+
+一、安装环境
+  1、安装vmware12.0版本
+
+  2、安装centos6.6的镜像文件
+
+  3、安装vmare_tool工具（方便虚拟机与实体机的切换）
+
+  4、配置网络
+     虚拟机网络连接方式：桥接模式(B)直接连接物理网络
+     安装完成后设置虚拟机网络(ipv4)为固定IP地址(system-config-network)
+     进行网络测试OK，则操作系统环境准备完毕
+
+
+二、配置环境
+   1、编译并配置ACE_TAO环境
+      1）先将版本ACEWrapper解压到/local/ACE_wrappers下面(路径可以自己指定)
+      2）配置环境变量 /etc/bashrc，写入如下内容
+ 
+	#ACE TAO 相关环境变量导出
+	export ACE_ROOT=/opt/ACE_Env/ACE_wrappers
+	export TAO_ROOT=$ACE_ROOT/TAO
+	export CIAO_ROOT=$TAO_ROOT/CIAO
+	export DANCE_ROOT=$TAO_ROOT/DAnCE
+	export LD_LIBRARY_PATH=$ACE_ROOT/lib:$LD_LIBRARY_PATH
+	export PATH=$ACE_ROOT/bin:$PATH（方便使用mpc工具）
+      最后执行source /etc/bashrc保存环境变量
+
+      3） 在$ACE_ROOT/ace路径下新建文件config.h，并输入
+	#include "ace/config-linux.h" 
+
+      4）在$ACE_ROOT/include/makeinclude路经下新建文件platform_macros.GNU，并输入以下内容
+	include $(ACE_ROOT)/include/makeinclude/platform_linux.GNU
+
+      5）在$TAO_ROOT 下启动终端，输入mwc.pl -type gnuace TAO_ACE.mwc，生成编译文件GNUMakefile
+
+      6）输入make命令编译，无需带参数，会自动找$TAO_ROOT下的GNUMakefile文件执行
+
+      7）编译测试程序，测试ACE环境
+####test.cpp文件
+	#include"ace/OS.h"
+	#include"ace/Log_Msg.h"
+	int ACE_TMAIN()
+	{
+    		ACE_DEBUG((LM_DEBUG,ACE_TEXT("hello world!\n")));
+    		return 0;
+	}
+####test.mpc文件
+         project(test_1):aceexe{
+    		exename = test_1
+    		source_files{
+        		test_1.cpp
+    			}
+	}
+        如果运行结果显示“hello world!”，则环境配置成功 
+
+
+   2、安装SVN
+      yum  install subservion
+
+   3、通过svn来chekout工程
+      svn checkout/co  svn地址
+
+
+三、配置解析XML文件的环境（下载linux版本的xml解析库文件）
+
+1、下载安装包
+    http://xerces.apache.org/xerces-c/download.cgi
+2、解压安装包
+   tar -zxvf xerces-c-src_2_7_0.tar.gz
+3、导入环境变量（设置环境变量）
+   export  XERCESROOT =  /home/guocaifeng/local/xerces-c-3.1.4
+4、安装
+    make install
+
+//编译静态库
+[root@localhost xerces-c-3.1.2]# ac_cv_func_iconv_open=yes ac_cv_func_iconv_close=yes ac_cv_func_mblen=yes ac_cv_func_wcstombs=yes ac_cv_func_mbstowcs=yes ac_cv_func_iconv=yes ./configure --host=arm-linux-androideabi --enable-static --disable-shared --enable-transcoder-iconv
+[root@localhost xerces-c-3.1.2]# make -j5
+
+//编译动态库
+[root@localhost xerces-c-3.1.2]# gl_cv_header_working_stdint_h=yes ac_cv_func_iconv_open=yes ac_cv_func_iconv_close=yes ac_cv_func_mblen=yes ac_cv_func_wcstombs=yes ac_cv_func_mbstowcs=yes ac_cv_func_iconv=yes ./configure --host=arm-linux-androideabi --enable-transcoder-iconv
+[root@localhost xerces-c-3.1.2]# make -j5
+
+//成功编译动态库
+[root@localhost xerces-c-3.1.2]# find . -name libxerces-c-3.1.so
+./src/.libs/libxerces-c-3.1.so
+
+
+
+
+四、安装oracle数据库（下载oracle数据库的安装文件）
+//准备文件（尚未实践操作）
+linux_11gR2_database_1of2
+linux_11gR2_database_2of2
+VMware Workstation 10.0.2
+SSH Secure Shell Client(安装SSH Secure Shell Client并连接主机)
+instantclient_11_2
+plsqldev1005
+
+
+
+    
+ 
+
+      
+      
